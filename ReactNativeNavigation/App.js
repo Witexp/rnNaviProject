@@ -14,7 +14,7 @@ export default function App() {
               startAsync={bootstrap}
               onFinish={() => setIsReady(true)}
               onError = {err => console.log(err)}
-              />
+           />
   }
   
   return (
