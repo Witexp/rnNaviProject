@@ -1,19 +1,37 @@
 import React from 'react'
-import { StyleSheet, Text, View } from 'react-native'
+import { HeaderButtons, Item} from 'react-navigation-header-buttons'
 
-export const BookedScreen = ({}) => {
+import { DATA } from '../data'
+import { AppHeaderIcon } from '../components/AppHeaderIcon'
+import { PostList } from '../components/PostList'
+import { THEME } from '../theme'
+
+
+export const BookedScreen = ({navigation}) => {
+
+    const openPostHandler = post => {
+        navigation.navigate('Post',{ postId: post.id, date: post.date, booked: post.booked })
+    }
+  
+    const data = DATA.filter(post => post.booked)
+
     return (
-        <View style={styles.center}>
-            <Text>BookedScreen</Text>
-        </View>
+        <PostList data={data} onOpen={openPostHandler}/>
     )
 }
 
-
-const styles = StyleSheet.create({
-    center: {
-        flex:1,
-        justifyContent: 'center',
-        alignItems: 'center'
-    }
+BookedScreen.navigationOptions = ({navigation}) => ({
+    headerTitle: 'Избранное',
+    // headerStyle: {
+    //     backgroundColor: Platform.OS === 'android' ? THEME.MAIN_COLOR : '#fff',
+    // },
+    // headerTintColor: Platform.OS === 'android' ? "#fff" : THEME.MAIN_COLOR,
+    
+    headerLeft: () => (<HeaderButtons HeaderButtonComponent={AppHeaderIcon}>
+                        <Item 
+                        title="Toogle Drawer" 
+                        iconName='ios-menu' 
+                        onPress={() => navigation.toggleDrawer()}/>
+                     </HeaderButtons>),
 })
+
