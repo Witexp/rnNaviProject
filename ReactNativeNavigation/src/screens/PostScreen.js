@@ -1,16 +1,37 @@
-import React, {useEffect} from 'react'
+import React, {useEffect , useCallback} from 'react'
 import { StyleSheet, Text, View, Image, Button, ScrollView, Alert } from 'react-native'
 import { HeaderButtons, Item} from 'react-navigation-header-buttons'
+import { useDispatch, useSelector} from 'react-redux'
 
-import { DATA } from '../data';
 import { THEME } from '../theme';
 import { AppHeaderIcon } from '../components/AppHeaderIcon'
+import { toogleBooked, removePost } from '../store/actions/post';
 
 export const PostScreen = ({navigation}) => {
 
+    const dispatch = useDispatch()
+
     const postId = navigation.getParam('postId');
 
-    const post = DATA.find(p => p.id === postId)
+    const post = useSelector(state => state.post.allPosts.find(p => p.id === postId))
+
+    const booked = useSelector(state => 
+        state.post.bookedPosts.some(post => post.id === postId))
+    
+    useEffect(() => {
+        navigation.setParams({ booked })
+    }, [booked])
+
+    const toogleHandler = useCallback(() => {
+        console.log(postId)
+        dispatch(toogleBooked(postId))
+    }, [dispatch, postId])
+
+    useEffect(() => {
+      navigation.setParams({toogleHandler})  
+    }, [toogleHandler])
+
+    
 
     // useEffect(() => {
     //     navigation.setParams({booked: post.booked})
@@ -24,10 +45,17 @@ export const PostScreen = ({navigation}) => {
                 text: 'Отменить',
                 style: 'cancel'
               },
-              { text: 'Удалить', style: 'destructive', onPress: () => {} }
+              { text: 'Удалить', style: 'destructive', onPress: () => {
+                  navigation.navigate('Main')
+                  dispatch(removePost(postId))
+              } }
             ],
             { cancelable: false }
           );
+    }
+
+    if (!post){
+        return null
     }
 
     return (
@@ -45,7 +73,7 @@ PostScreen.navigationOptions = ({navigation}) => {
     
     const date = navigation.getParam('date');
     const booked = navigation.getParam('booked');
-
+    const toogleHandler = navigation.getParam('toogleHandler');
     const iconName = booked ? 'ios-star' : 'ios-star-outline'
 
     return {
@@ -54,7 +82,7 @@ PostScreen.navigationOptions = ({navigation}) => {
                                 <Item 
                                 title="Take photo" 
                                 iconName={iconName}
-                                onPress={() => console.log('Press photo')}/>
+                                onPress={toogleHandler}/>
                             </HeaderButtons>),
     }
 }
