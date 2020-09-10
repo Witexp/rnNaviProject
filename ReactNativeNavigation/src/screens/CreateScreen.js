@@ -1,4 +1,4 @@
-import React,{ useState } from 'react'
+import React,{ useState, useRef } from 'react'
 import { StyleSheet, Text, View, Image,Button,ScrollView, TouchableWithoutFeedback, Keyboard } from 'react-native'
 import { HeaderButtons, Item} from 'react-navigation-header-buttons'
 
@@ -7,6 +7,7 @@ import { AppHeaderIcon } from '../components/AppHeaderIcon'
 import { TextInput } from 'react-native-gesture-handler'
 import { THEME } from '../theme'
 import { addPost } from '../store/actions/post'
+import { PhotoPicker } from '../components/PhotoPicker'
 
 export const CreateScreen = ({navigation}) => {
 
@@ -14,17 +15,23 @@ export const CreateScreen = ({navigation}) => {
 
     const [text, setText] = useState('')
 
-    const img = 'https://cdn.londonandpartners.com/visit/general-london/areas/river/76709-640x360-houses-of-parliament-and-london-eye-on-thames-from-above-640.jpg'
+    const imgRef = useRef()
+
+    //const img = 'https://cdn.londonandpartners.com/visit/general-london/areas/river/76709-640x360-houses-of-parliament-and-london-eye-on-thames-from-above-640.jpg'
 
     const saveHandler = () => {
         const post = {
             date: new Date().toJSON(),
             text: text,
-            img: img,
+            img: imgRef.current,
             booked: false
         }
         dispatch(addPost(post))
         navigation.navigate('Main')
+    }
+
+    const photoPickHandler = (uri) =>{
+        imgRef.current = uri
     }
 
     return (
@@ -39,11 +46,13 @@ export const CreateScreen = ({navigation}) => {
                         onChangeText={setText} 
                         multiline
                     />
-                    <Image style={{width: '100%', height: 200, marginBottom: 10}} 
-                        source={{uri: img}}/>
+                    <PhotoPicker onPick={photoPickHandler}/>
+                    
                     <Button title="Создать пост" 
                         color={THEME.MAIN_COLOR} 
-                        onPress={saveHandler} />
+                        onPress={saveHandler} 
+                        disabled={!text }
+                        />
                 </View>
             </TouchableWithoutFeedback>
         </ScrollView>

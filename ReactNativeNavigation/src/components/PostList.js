@@ -1,14 +1,19 @@
 import React from 'react'
-import { StyleSheet, View, FlatList } from 'react-native'
+import { StyleSheet, View, FlatList, Text } from 'react-native'
 import { Post } from './Post'
 
-export const PostList = (props) => {
+export const PostList = ({data, onOpen}) => {
+    if (!data.length){
+        return <View style={styles.wrapper}>
+                    <Text style={styles.noItems}>Постов пока нет</Text>
+                </View>
+    }
     return (
         <View style={styles.wrapper}>
         <FlatList 
-        data={props.data} 
+        data={data} 
         keyExtractor={post => post.id.toString()} 
-        renderItem={({item}) =><Post post={item} onOpen={props.onOpen}/>
+        renderItem={({item}) =><Post post={item} onOpen={onOpen}/>
         }/>
         </View>
     )
@@ -19,5 +24,9 @@ export const PostList = (props) => {
 const styles = StyleSheet.create({
     wrapper: {
         padding: 10
-    }
+    },
+    noItems: {
+        fontFamily: 'open-regular',
+        textAlign: 'center',
+    },
 })
